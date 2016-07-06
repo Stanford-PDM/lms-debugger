@@ -1,0 +1,15 @@
+/RUNNING_PID
+/logs/
+/project/*-shim.sbt
+/project/project/
+/project/target/
+target/
+
+#Sublime files
+*.sublime-workspace
+*.sublime-project
+
+#Ensime files
+.ensime
+.ensime_cache
+.ensime_session
