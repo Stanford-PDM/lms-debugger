@@ -1,3 +1,6 @@
+package org.lmsdbg
+package utils
+
 import org.scaladebugger.api.profiles.traits.info._
 import java.io.File
 import scala.io.Source
@@ -13,9 +16,12 @@ object Definitions {
   val ExpressionsClassName = "scala.virtualization.lms.internal.Expressions"
   val DefClassName = "scala.virtualization.lms.internal.Expressions$Def"
   val SymClassName = "scala.virtualization.lms.internal.Expressions$Sym"
+  val ConstClassName = "scala.virtualization.lms.internal.Expressions$Const"
   val ClassTypeManifestClassName = "scala.reflect.ManifestFactory$ClassTypeManifest"
   val BlockClassName = "scala.virtualization.lms.internal.Blocks$Block"
   val DeliteConfigObjectName = "ppl.delite.framework.Config$"
+  val SummaryClassName = "scala.virtualization.lms.internal.Effects$Summary"
+  val TPClassName = "scala.virtualization.lms.internal.Expressions$TP"
 
   val Map2ClassName = "scala.collection.immutable.Map$Map2"
   val NilObjectClassName = "scala.collection.immutable.Nil$"

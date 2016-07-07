@@ -1,3 +1,6 @@
+package org.lmsdbg
+package utils
+
 import org.scaladebugger.api.profiles.traits.info._
 import Definitions._
 import Localizers._
@@ -22,7 +25,9 @@ trait JVMFormatter extends Formatter {
  * Also handles the case of boxed primitive types and objects with toStringFields
  */
 trait ScalaVMFormatter extends JVMFormatter {
-  import DynamicWrappers._
+
+  /** Fields that are compiler generate and/or non useful */
+  private val ignoredFields = List("hashCode", "MODULE$", "$outer", "bitmap$0")
 
   private def unboxIfNeeded(value: ValueInfoProfile): ValueInfoProfile = {
     if (BoxedPrimitives.contains(value.typeInfo.name)) {
@@ -58,7 +63,7 @@ trait ScalaVMFormatter extends JVMFormatter {
       } else {
         s"class $className"
       }
-      val fields = obj.fields.filterNot(_.name == "MODULE$") // TODO find out what this is ?
+      val fields = obj.fields.filterNot(field => ignoredFields.contains(field.name)) // TODO find out what this is ?
       fields.map { field =>
         val fieldValue = unboxIfNeeded(field.toValueInfo)
         s"${field.name} = ${format(fieldValue, depth - 1)}"
@@ -75,8 +80,7 @@ trait LMSFormatter extends ScalaVMFormatter {
 
   override def format(value: ValueInfoProfile, depth: Int): String = value.typeInfo.name match {
     case SymClassName =>
-      val id = new ValueScope(value).id.as[Int]
-      s"Sym($id)"
+      new ValueScope(value).as[mock.lms.Expressions.Sym].toString
     case ClassTypeManifestClassName =>
       val fullName = new ValueScope(value).runtimeClass.name.as[String]
       //println(fullName)
@@ -88,6 +92,18 @@ trait LMSFormatter extends ScalaVMFormatter {
     case BlockClassName =>
       val res = value.toObjectInfo.field("res").toValueInfo
       s"Block(res = ${format(res, depth - 1)})"
+    case SummaryClassName =>
+      import mock.lms.Effects._
+      val local = new ValueScope(value).as[Summary]
+      local match {
+        case Pure    => "Summary.Pure"
+        case Simple  => "Summary.Simple"
+        case Global  => "Summary.Global"
+        case Alloc   => "Summary.Alloc"
+        case Control => "Summary.Control"
+        case summary => summary.toString
+      }
+
     case _ => super.format(value, depth)
   }
 }
@@ -107,6 +123,7 @@ object Printer {
     formatter.format(value)
   }
 
+// FIXME HACK
   def strln(value: ValueInfoProfile): String = {
     formatter
       .format(value)

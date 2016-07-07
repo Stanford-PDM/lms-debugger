@@ -1,7 +1,9 @@
+package org.lmsdbg
+
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 
-import Definitions._
+import utils.Definitions._
 import com.sun.jdi.event._
 import org.scaladebugger.api.virtualmachines._
 import org.scaladebugger.api.profiles.traits.info._
@@ -43,7 +45,7 @@ object LMSInfo {
   }
 
   def getDefOrSame(valueInfo: ValueInfoProfile): ValueInfoProfile = {
-    if (valueInfo.typeInfo.name != Definitions.SymClassName) {
+    if (valueInfo.typeInfo.name != SymClassName) {
       valueInfo
     } else {
       val id = valueInfo.toObjectInfo.field("id").toValueInfo.toLocalValue.asInstanceOf[Int]

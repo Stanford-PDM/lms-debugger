@@ -1,3 +1,5 @@
+package org.lmsdbg
+
 import org.scaladebugger.api.utils.JDITools
 
 object VerifyLibrary {

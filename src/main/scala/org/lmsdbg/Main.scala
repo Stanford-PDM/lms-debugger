@@ -1,3 +1,5 @@
+package org.lmsdbg
+
 import org.scaladebugger.api.debuggers._
 import org.scaladebugger.api.profiles.traits.info._
 import org.scaladebugger.api.virtualmachines._
@@ -7,13 +9,15 @@ import org.scaladebugger.api.pipelines.Pipeline._
 
 import scala.concurrent.duration._
 import scala.util.{Success, Failure}
-import DynamicWrappers._
+import utils.DynamicWrappers._
+import utils.Printer
+import utils.Definitions
 
 // TODO: clean this crap out into different files
 // separate between synchronous/async methods
 object Main {
 
-  import Definitions._
+  import utils.Definitions._
 
   def main(args: Array[String]): Unit = {
     val attachingDebugger = AttachingDebugger(port = 5005)
@@ -48,12 +52,33 @@ object Main {
 
   /** Used to get elements from remote vm
    * eg: if variable 'a' is in scope in current frame, use &a
-   * problem : Doesn't chain unless you only use postfix operators
+   * problem : Doesn't chain unless you only use postfix operators (&a b c or &.a.b.c but no mix)
    */
   import scala.language.postfixOps
   def & : Scope = {
     val _ = postfixOps // clear ensime warning
     new LMSGlobalScope(getTopDeliteFrame(vm).get)
+  }
+
+  def showMultiloopSoaThings(e: BreakpointEvent)(implicit vm: ScalaVirtualMachine): Unit = {
+    val frame = vm.thread(e.thread).topFrame
+    val scope = new GlobalScope(frame)
+    val alloc = scope.body.buf.alloc
+    println(alloc)
+
+  }
+
+  def showEffectDeps(reifyNode: Scope): Unit = {
+    val effects = reifyNode.effects.asList
+    for (reflect <- effects) {
+      println(reflect.x)
+      println(reflect.summary)
+      val deps = reflect.deps.asList
+      for (dep <- deps) {
+        println(s"  $dep")
+      }
+      println()
+    }
   }
 
   // Helper functions for the console
@@ -380,7 +405,7 @@ object Main {
 
   def v(query: CurrentContext => LocalVariablePath = identity)(
       implicit frame: FrameInfoProfile) = {
-    new DynamicWrappers.ValueScope(value(query).get)
+    new utils.DynamicWrappers.ValueScope(value(query).get)
   }
 
   def p(block: CurrentContext => LocalVariablePath = identity)(

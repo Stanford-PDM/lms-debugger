@@ -22,7 +22,9 @@ val root = project.in(file(".")).settings(commonSettings).settings(
   name := """LMS-debugger""",
   version := "0.1",
   initialCommands := """
+    import org.lmsdbg._
     import Main._
+    import utils._
     import Printer._
     import DynamicWrappers._
     implicit val vm = attach()

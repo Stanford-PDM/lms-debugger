@@ -1,3 +1,6 @@
+package org.lmsdbg
+package utils
+
 import org.scaladebugger.api.profiles.traits.info._
 
 import scala.util.{Try, Success, Failure}
@@ -29,10 +32,32 @@ object Localizers {
   implicit object UnitLocalizer extends NativeLocalizer[Unit]
   implicit object StringLocalizer extends NativeLocalizer[String]
 
+  /**
+   * This localizer is more specific than the general value localizer 
+   * and assumes you are trying to serialize an Object
+   */
   trait ObjectLocalizer[T] extends ValueLocalizer[T] {
     def tryLocal(obj: ObjectInfoProfile): Try[T]
     def tryLocal(value: ValueInfoProfile): Try[T] = {
       value.tryToObjectInfo.flatMap(tryLocal)
+    }
+  }
+
+  /**
+   * This localizer will make sure you pass in a class with the correct name
+   */
+  trait NamedObjectLocalizer[T] extends ObjectLocalizer[T] {
+    def className: String
+    def tryLocal(obj: ObjectInfoProfile): Try[T]
+    override def tryLocal(value: ValueInfoProfile): Try[T] = {
+      value.tryToObjectInfo
+        .flatMap(x =>
+              if (x.typeInfo.name == className) {
+            Success(x)
+          } else {
+            Failure(new Throwable(s"${x.toPrettyString} is not an instance of $className"))
+        })
+        .flatMap(tryLocal)
     }
   }
 
