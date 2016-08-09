@@ -20,7 +20,7 @@ object Main {
   import utils.Definitions._
 
   def main(args: Array[String]): Unit = {
-    val attachingDebugger = AttachingDebugger(port = 5005)
+    val attachingDebugger = AttachingDebugger(port = 5006)
 
     attachingDebugger.start { implicit vm =>
       println("Attached to JVM: " + vm.uniqueId)
@@ -83,7 +83,7 @@ object Main {
 
   // Helper functions for the console
   def attach(): ScalaVirtualMachine = {
-    debugger = AttachingDebugger(port = 5005)
+    debugger = AttachingDebugger(port = 5006)
     vm = clean(debugger.start(10.seconds))
     vm
   }

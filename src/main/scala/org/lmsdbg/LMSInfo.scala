@@ -54,4 +54,6 @@ object LMSInfo {
   }
 
   def defForId(id: Int) = symbols.get(id)
+
+  def node(id: Int) = new utils.DynamicWrappers.ValueScope(symbols(id))
 }

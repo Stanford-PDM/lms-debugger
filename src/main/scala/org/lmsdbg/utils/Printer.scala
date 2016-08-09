@@ -47,13 +47,12 @@ trait ScalaVMFormatter extends JVMFormatter {
 
   override def format(value: ValueInfoProfile, depth: Int): String = {
     Utils.printDebug(s"Formatting value -> ${value.toPrettyString}, depth = $depth")
-    assert(depth >= 0)
 
     val unboxed = toStringFieldOrSame(unboxIfNeeded(value))
     val typ = unboxed.typeInfo
     if (isSubtypeOfList(typ)) {
       if (typ.name == NilObjectClassName) "Nil" else "List(...)"
-    } else if (depth == 0 || typ.isPrimitiveType || typ.isStringType || typ.isNullType) {
+    } else if (depth <= 0 || typ.isPrimitiveType || typ.isStringType || typ.isNullType) {
       unboxed.toPrettyString
     } else {
       val obj = value.toObjectInfo
@@ -81,6 +80,9 @@ trait LMSFormatter extends ScalaVMFormatter {
   override def format(value: ValueInfoProfile, depth: Int): String = value.typeInfo.name match {
     case SymClassName =>
       new ValueScope(value).as[mock.lms.Expressions.Sym].toString
+    case ConstClassName =>
+      val fake = new ValueScope(value).as[mock.lms.Expressions.Const[ValueInfoProfile]]
+      s"Const(${format(fake.x, depth - 1)})"
     case ClassTypeManifestClassName =>
       val fullName = new ValueScope(value).runtimeClass.name.as[String]
       //println(fullName)

@@ -109,6 +109,7 @@ object DynamicWrappers {
   implicit class PimpedScope(value: Scope) {
     // TODO: find a way to inject LMS dependency in here
     def asList = value.as[List[ValueInfoProfile]].map(new LMSValueScope(_))
+    def asSeq = value.as[Seq[ValueInfoProfile]].map(new LMSValueScope(_))
 
     // TODO
     def symbolId: Option[Int] = value match {

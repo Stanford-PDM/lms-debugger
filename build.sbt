@@ -31,6 +31,8 @@ val root = project.in(file(".")).settings(commonSettings).settings(
     LMSInfo.init
     import scala.language.postfixOps
     import Localizers._
+    import LMSInfo._
+    import org.scaladebugger.api.profiles.traits.info.ValueInfoProfile
   """,
   cleanupCommands := "detach()",
   libraryDependencies += "org.scala-debugger" %% "scala-debugger-api" % "1.1.0-M1"

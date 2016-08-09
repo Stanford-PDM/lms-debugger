@@ -34,13 +34,15 @@ object Definitions {
   val ExpressionsFileName = "scala/virtualization/lms/internal/Expressions.scala"
 
   val IntegerClassName = "java.lang.Integer"
+  val CharacterClassName = "java.lang.Character"
 
-  val BoxedPrimitives = Seq(IntegerClassName)
+  val BoxedPrimitives = Seq(IntegerClassName, CharacterClassName)
 
   // TODO: find easier way to get symbols from process being debugged (sbt or other)
+  val HyperDSLFolder = new File("/Users/dengels/Documents/EPFL/PDM/Projects/mine-hyperdsl")
   val LMSFolder = new File("/Users/dengels/Documents/EPFL/PDM/Projects/lms-core")
   val DeliteFolder = new File("/Users/dengels/Documents/EPFL/PDM/Projects/mine-delite")
-  val ProjectFolders = Seq(LMSFolder, DeliteFolder)
+  val ProjectFolders = Seq(HyperDSLFolder) //Seq(LMSFolder, DeliteFolder)
 
   trait ScalaSource {
     def fullName: String

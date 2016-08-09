@@ -93,4 +93,23 @@ object Localizers {
     }
   }
 
+  implicit def seqLocalizer[T: ValueLocalizer] = new ValueLocalizer[Seq[T]] {
+
+    def tryLocal(value: ValueInfoProfile): Try[Seq[T]] = {
+      listLocalizer[T].tryLocal(value) orElse {
+        value.tryToArrayInfo.flatMap { seq =>
+          seq.values.foldLeft[Try[Seq[T]]](Success(Seq.empty)) {
+            case (tryAcc, elem) =>
+              for {
+                acc <- tryAcc
+                elemValue <- localizer[T].tryLocal(elem)
+              } yield {
+                acc :+ elemValue
+              }
+          }
+        }
+      }
+    }
+  }
+
 }
