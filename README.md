@@ -101,6 +101,15 @@ scala> &.currentScope.asList.map(_.sym.symbolId)
 res6: List[Option[Int]] = List(Some(5), Some(6), ...)
 ```
 
+You can also define mock classes to reify remote objects on the debugging VM. 
+
+```scala
+scala> &.currentScope.asList.head.as[mock.lms.Expressions.TP]
+res10: org.lmsdbg.mock.lms.Expressions.TP = TP(Sym(5),class Effects$Reflect{x = Instance of ppl.delite.framework.datastructures.DeliteArrayOpsExp$DeliteArrayNew (0x2787), summary = Summary.Alloc, deps = Nil})
+```
+
+To do so, just define a mock class (see org.lmsdbg.mock.lms) with an associated [Localizer](https://github.com/Stanford-PDM/lms-debugger/blob/master/src/main/scala/org/lmsdbg/utils/Localizers.scala). The mock class can be arbitrarily precise, you can always fallback to a dynamic value by defining it's type as `Scope`, as for example is the first field in the above example.
+
 ## Design
 We rely heavily on the [scala-debugger](http://scala-debugger.org/) project to provide basic debugging capabilities. We then add a few lightweight wrappers for simplified use with lms:
 
