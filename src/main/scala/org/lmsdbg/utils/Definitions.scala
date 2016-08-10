@@ -22,6 +22,7 @@ object Definitions {
   val DeliteConfigObjectName = "ppl.delite.framework.Config$"
   val SummaryClassName = "scala.virtualization.lms.internal.Effects$Summary"
   val TPClassName = "scala.virtualization.lms.internal.Expressions$TP"
+  val ReflectClassName = "scala.virtualization.lms.internal.Effects$Reflect"
 
   val Map2ClassName = "scala.collection.immutable.Map$Map2"
   val NilObjectClassName = "scala.collection.immutable.Nil$"

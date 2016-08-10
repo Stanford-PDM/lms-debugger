@@ -5,7 +5,7 @@ import Expressions.Sym
 import utils.Localizers._
 import utils.Definitions
 import scala.util.Try
-import utils.DynamicWrappers.Scope
+import utils.DynamicWrappers._
 
 import org.scaladebugger.api.profiles.traits.info._
 
@@ -41,9 +41,6 @@ object Effects {
   val Alloc = Summary(false, false, false, false, true, false, Nil, Nil, Nil, Nil)
   val Control = Summary(false, false, false, false, false, true, Nil, Nil, Nil, Nil)
 
-  case class Reflect(x: Scope, summary: Summary, deps: List[Scope])
-  case class Reify(x: Scope, summary: Summary, effects: List[Scope])
-
   implicit object SummaryLocalizer extends NamedObjectLocalizer[Summary] {
     def className = Definitions.SummaryClassName
     def tryLocal(obj: ObjectInfoProfile): Try[Summary] = {
@@ -75,4 +72,25 @@ object Effects {
       }
     }
   }
+
+  case class Reflect(x: Scope, summary: Summary, deps: List[Scope])
+  case class Reify(x: Scope, summary: Summary, effects: List[Scope])
+
+  implicit object ReflectLocalizer extends NamedObjectLocalizer[Reflect] {
+    def className = Definitions.ReflectClassName
+    def tryLocal(obj: ObjectInfoProfile): Try[Reflect] = {
+      for {
+        x <- obj.tryField("x")
+        xValue = new ValueScope(x.toValueInfo)
+        summary <- obj.tryField("summary")
+        summaryValue <- SummaryLocalizer.tryLocal(summary.toValueInfo)
+        deps <- obj.tryField("deps")
+        depsList <- listLocalizer[ValueInfoProfile].tryLocal(deps.toValueInfo)
+        depsValue = depsList.map(new ValueScope(_))
+      } yield {
+        Reflect(xValue, summaryValue, depsValue)
+      }
+    }
+  }
+
 }
